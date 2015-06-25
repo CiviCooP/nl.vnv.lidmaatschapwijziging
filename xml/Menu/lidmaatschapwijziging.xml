@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/lidmaatschapwijziging</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapWijziging</page_callback>
+    <title>LidmaatschapWijziging</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/lidmaatschapwijziging/contact</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact</page_callback>
+    <title>LidmaatschapWijziging - Contact</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
