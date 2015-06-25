@@ -233,7 +233,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
       
       // set message
       $session = CRM_Core_Session::singleton();
-      $session->setStatus(sprintf(ts('%s is saved !'), $this->_display_name), ts('Contact Saved'), 'success');
+      $session->setStatus(sprintf(ts('%s is saved !'), $this->_display_name), ts('Lidmaatschap Wijziging - Contact - Contact Saved'), 'success');
       
       // redirect user
       $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', 'reset=1&cid=' . $this->_contactId);
@@ -246,7 +246,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
     
     // set message
     $session = CRM_Core_Session::singleton();
-    $session->setStatus(sprintf(ts('%s is not saved !'), $this->_display_name), ts('Contact Not Saved'), 'error');
+    $session->setStatus(sprintf(ts('%s is not saved !'), $this->_display_name), ts('Lidmaatschap Wijziging - Contact - Contact Not Saved'), 'error');
       
     // redirect user
     $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', 'reset=1&cid=' . $this->_contactId);

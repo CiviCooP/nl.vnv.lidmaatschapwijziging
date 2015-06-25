@@ -58,7 +58,7 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
    */
   public static function &singleton($contact_id) {
     if (self::$_singleton === NULL) {
-      self::$_singleton = new CRM_Lidmaatschapwijziging_Config($contact_id);
+      self::$_singleton = new CRM_Lidmaatschapwijziging_ConfigContact($contact_id);
     }
     return self::$_singleton;
   }
