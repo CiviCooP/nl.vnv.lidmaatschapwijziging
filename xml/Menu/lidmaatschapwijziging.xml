@@ -12,4 +12,16 @@
     <title>LidmaatschapWijziging - Contact</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/lidmaatschapwijziging/membership</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership</page_callback>
+    <title>Lidmaatschapwijziging - Membership</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/lidmaatschapwijziging/relationship</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship</page_callback>
+    <title>LidmaatschapwijzigingRelationship</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

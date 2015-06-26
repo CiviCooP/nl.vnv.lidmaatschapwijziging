@@ -120,12 +120,13 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
         'version' => 3,
         'sequential' => 1,
         'name' => $this->vnvInfoCustomGroupName,
+        'sort' => 'weight', // sort by weight or you know
       );
       $this->vnvInfoCustomGroup = civicrm_api('CustomGroup', 'getsingle', $params);
       
     } catch (CiviCRM_API3_Exception $ex) {
       throw new Exception('Could not find vnv info custom group id, '
-        . 'error from API CustomGroup getvalue: '.$ex->getMessage());
+        . 'error from API CustomGroup getsingle: '.$ex->getMessage());
     }
   }
   
@@ -144,6 +145,7 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
         'version' => 3,
         'sequential' => 1,
         'custom_group_id' => $this->getVnvInfoCustomGroupField('id'),
+        'sort' => 'weight', // sort by weight or you know
       );
       $result = civicrm_api('CustomField', 'get', $params);
       
@@ -181,16 +183,17 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
             'version' => 3,
             'sequential' => 1,
             'option_group_id' => $field['option_group_id'],
+            'sort' => 'weight', // sort by weight or you know
           );
-          $result = civicrm_api('OptionValue', 'get', $params);
-
-          foreach ($result['values'] as $key => $value){
-            $this->vnvInfoCustomFieldsOptionValues[$field['name']][$value['name']] = $value;
-          }
+          $result = civicrm_api('OptionValue', 'get', $params);        
 
         } catch (CiviCRM_API3_Exception $ex) {
           throw new Exception('Could not find vnv info custom fields option values, '
             . 'error from API CustomField get: '.$ex->getMessage());
+        }
+        
+        foreach ($result['values'] as $key => $value){
+          $this->vnvInfoCustomFieldsOptionValues[$field['name']][$value['id']] = $value; // you have to use the id, because al long name is sorted to around the 30 characters, so it can be that the name is double
         }
       }
     }
@@ -238,12 +241,13 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
         'version' => 3,
         'sequential' => 1,
         'name' => $this->werkgeverCustomGroupName,
+        'sort' => 'weight', // sort by weight or you know
       );
       $this->werkgeverCustomGroup = civicrm_api('CustomGroup', 'getsingle', $params);
       
     } catch (CiviCRM_API3_Exception $ex) {
       throw new Exception('Could not find werkgever custom group id, '
-        . 'error from API CustomGroup getvalue: '.$ex->getMessage());
+        . 'error from API CustomGroup getsingle: '.$ex->getMessage());
     }
   }
   
@@ -262,6 +266,7 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
         'version' => 3,
         'sequential' => 1,
         'custom_group_id' => $this->getWerkgeverCustomGroupField('id'),
+        'sort' => 'weight', // sort by weight or you know
       );
       $result = civicrm_api('CustomField', 'get', $params);
             
@@ -301,11 +306,13 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
             'version' => 3,
             'sequential' => 1,
             'option_group_id' => $field['option_group_id'],
+            'sort' => 'weight',  // sort by weight or you know
           );
           $result = civicrm_api('OptionValue', 'get', $params);
-
+          
+          // 
           foreach ($result['values'] as $key => $value){
-            $this->werkgeverCustomFieldsOptionValues[$field['name']][$value['name']] = $value;
+            $this->werkgeverCustomFieldsOptionValues[$field['name']][$value['id']] = $value; // you have to use the id, because al long name is sorted to around the 30 characters, so it can be that the name is double
           }
 
         } catch (CiviCRM_API3_Exception $ex) {

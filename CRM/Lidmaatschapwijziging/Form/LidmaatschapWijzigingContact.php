@@ -16,6 +16,9 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
   
   public $_values = array();
   
+  public $_configContact = array();
+
+
   /**
    * This function is called prior to building and submitting the form
    */
@@ -32,13 +35,16 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
       CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to edit this contact.'), NULL, ts('Lidmaatschap Wijziging - Contact')); // this also redirects to the default civicrm page
     }
     
+    // get session
+    $session = CRM_Core_Session::singleton();
+    
     // redirect user after postProcess
-    $urlParams = 'reset=1&cid=' . $this->_contactId;
-    $session->pushUserContext(CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', $urlParams));
+    //$urlParams = 'reset=1&cid=' . $this->_contactId;
+    //$session->pushUserContext(CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', $urlParams));
     
     // get values
-    $config = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);
-    $this->_values = $config->getContact();
+    $this->_configContact = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);    
+    $this->_values = $this->_configContact->getContact();
     
     // set display name
     $this->_display_name = $this->_values['display_name'];
@@ -52,25 +58,25 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
     // change the default name like huppeldepup_35 to huppeldepup, this
     // ensures the we can use the know names for custom fields in the template like
     // huppeldepup and not the column_names like huppeldepup_35
-    $values = $config->getVnvInfoCustomValues();
+    $values = $this->_configContact->getVnvInfoCustomValues();
     
     // set vnvn info id, is neede for update or insert in the postProccess
     if(isset($values['id']) and !empty($values['id'])){
       $this->_vnvinfoId = $values['id'];
     }
     
-    foreach($config->getVnvInfoCustomFields() as $key => $field){
+    foreach($this->_configContact->getVnvInfoCustomFields() as $key => $field){
       $this->_values[$field['name']] = $values[$field['column_name']];
     }
     
-    $values = $config->getWerkgeverCustomValues();
+    $values = $this->_configContact->getWerkgeverCustomValues();
     
     // set werkgever id, is neede for update or insert in the postProccess
     if(isset($values['id']) and !empty($values['id'])){
       $this->_werkgeverId = $values['id'];
     }
     
-    foreach($config->getWerkgeverCustomFields() as $key => $field){
+    foreach($this->_configContact->getWerkgeverCustomFields() as $key => $field){
       $this->_values[$field['name']] = $values[$field['column_name']];
     }
     
@@ -94,7 +100,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
   }
   
   function buildQuickForm() {
-    $config = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);
+    $this->_configContact = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);
     
     // Contactdetails
     $this->add('hidden', 'contact_id', ts('Contact id'), '', true);
@@ -105,8 +111,8 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
     $this->add('text', 'source', ts('Source'), '', true );
     
     // VNV info 
-    $vnvInfoFields = $config->getVnvInfoCustomFieldsByName();
-    $vnvInfoFieldsOptions = $config->getVnvInfoCustomFieldsOptionValues();
+    $vnvInfoFields = $this->_configContact->getVnvInfoCustomFieldsByName();
+    $vnvInfoFieldsOptions = $this->_configContact->getVnvInfoCustomFieldsOptionValues();
     $vnvInfoFieldsNeeded = array('Lid_kandidaat_voldoet_aan_een_van_de_volgende_criteria', 'Lid_beroepsvereniging_voldoet_aan_een_van_de_volgende_criteria');
         
     foreach($vnvInfoFields as $name => $field){
@@ -134,26 +140,32 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
     }
     
     // Werkgever
-    $werkgeverFields = $config->getWerkgeverCustomFieldsByName();
+    $werkgeverFields = $this->_configContact->getWerkgeverCustomFieldsByName();
     $werkgeverFieldsNeeded = array('Vl_type', 'Datum_in_dienst', 'Pers_code_let_', 'Postvak', 'persnr', 'Standplaats_Werkgever');
     
     foreach($werkgeverFields as $name => $field){
       switch($name){
+        
         case 'Vl_type':
           $this->add('text', $name, ts($field['label']), '', true);
           break;
+        
         case 'Datum_in_dienst':
           $this->addDate($name, ts($field['label']), true);
           break;
+        
         case 'Pers_code_let_':
           $this->add('text', $name, ts($field['label']), '', true);
           break;
+        
         case 'Postvak':
           $this->add('text', $name, ts($field['label']), '', true);
           break;
+        
         case 'persnr':
           $this->add('text', $name, ts($field['label']), '', true);
           break;
+        
         case 'Standplaats_Werkgever':
           $this->add('text', $name, ts($field['label']), '', true);
           break;
@@ -196,7 +208,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
   function postProcess() {
     $values = $this->exportValues();
         
-    $config = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);
+    $this->_configContact = CRM_Lidmaatschapwijziging_ConfigContact::singleton($this->_contactId);
         
     // set current_employer
     // current employer
@@ -217,13 +229,13 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
       );
       
       // for the custom values in contact, the need to be custom_35
-      foreach($config->getVnvInfoCustomFields() as $key => $field){
+      foreach($this->_configContact->getVnvInfoCustomFields() as $key => $field){
         if(isset($values[$field['name']])){
           $params['custom_' . $field['id']] = $values[$field['name']];
         }
       }
         
-      foreach($config->getWerkgeverCustomFields() as $key => $field){
+      foreach($this->_configContact->getWerkgeverCustomFields() as $key => $field){
         if(isset($values[$field['name']])){
           $params['custom_' . $field['id']] = $values[$field['name']];
         }
@@ -236,20 +248,22 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
       $session->setStatus(sprintf(ts('%s is saved !'), $this->_display_name), ts('Lidmaatschap Wijziging - Contact - Contact Saved'), 'success');
       
       // redirect user
-      $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', 'reset=1&cid=' . $this->_contactId);
+      $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/membership', 'reset=1&cid=' . $this->_contactId);
       CRM_Utils_System::redirect($url);
       
     } catch (CiviCRM_API3_Exception $ex) {
       throw new Exception('Could not create contact, '
         . 'error from Api Contact create: '.$ex->getMessage());
-    }   
-    
-    // set message
-    $session = CRM_Core_Session::singleton();
-    $session->setStatus(sprintf(ts('%s is not saved !'), $this->_display_name), ts('Lidmaatschap Wijziging - Contact - Contact Not Saved'), 'error');
       
-    // redirect user
-    $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', 'reset=1&cid=' . $this->_contactId);
-    CRM_Utils_System::redirect($url);
+      // set message
+      /*$session = CRM_Core_Session::singleton();
+      $session->setStatus(sprintf(ts('%s is not saved !'), $this->_display_name), ts('Lidmaatschap Wijziging - Contact - Contact Not Saved'), 'error');
+
+      // redirect user
+      $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/contact', 'reset=1&cid=' . $this->_contactId);
+      CRM_Utils_System::redirect($url);*/
+    }        
+    
+    parent::postProcess();
   }
 }
