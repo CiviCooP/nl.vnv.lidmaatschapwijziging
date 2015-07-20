@@ -38,8 +38,8 @@ class CRM_Lidmaatschapwijziging_ConfigMembership {
     $this->contact_id = $contact_id;
     
     // membership
-    $this->setMembership();
-    $this->setMembershipCurrent();
+    $this->setMemberships();
+    
     $this->setMembershipFields();
     $this->setMembershipTypes();
     $this->setMembershipStatus();
@@ -67,31 +67,48 @@ class CRM_Lidmaatschapwijziging_ConfigMembership {
     return $this->contact;
   }
   
-  // Membership
-  protected function setMembership(){
+  // Memberships
+  protected function setMemberships(){
     try {
       $params = array(
         'version' => 3,
         'sequential' => 1,
         'contact_id' => $this->contact_id,
-        'sort' => 'start_date', // so the last membership will be the last, in getMembershipCurrent() will get the last one, because it is the last one in the array
       );
       $result = civicrm_api('Membership', 'get', $params);
       foreach($result['values'] as $key => $membership){
-        $this->membership[] = $membership;
+        $this->memberships[$membership['id']] = $membership;
+        
+        // add status
+        $params = array(
+          'version' => 3,
+          'sequential' => 1,
+          'id' => $membership['status_id'],
+        );
+        $status = civicrm_api('MembershipStatus', 'getsingle', $params);
+        
+        if(!isset($status['is_error']) or !$status['is_error']){ // if there is no error   
+          if(isset($status['label']) and !empty($status['label'])){
+            $this->memberships[$membership['id']]['status'] = $status['label'];
+          }  
+        }  
       }
             
     } catch (CiviCRM_API3_Exception $ex) {
-      throw new Exception('Could not find membership, '
+      throw new Exception('Could not find memberships, '
         . 'error from API Membership get: '.$ex->getMessage());
     }
   }
   
-  public function getMembership(){
-    return $this->membership;
+  public function getMemberships(){
+    return $this->memberships;
+  }
+    
+  public function getMembership($membership_id){
+    return $this->memberships[$membership_id];
   }
   
-  protected function setMembershipCurrent(){
+  /*protected function setMembershipCurrent(){
     $membershipCurrent = array();
     // if there is just one membership
     if(count($this->membership) == 1){ 
@@ -128,7 +145,7 @@ class CRM_Lidmaatschapwijziging_ConfigMembership {
 
   public function getMembershipCurrentId(){
     $this->membershipCurrentId;
-  }
+  }*/
   
   protected function setMembershipFields() {
     try {

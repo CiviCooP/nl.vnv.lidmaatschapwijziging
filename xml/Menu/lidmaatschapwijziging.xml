@@ -24,4 +24,16 @@
     <title>LidmaatschapwijzigingRelationship</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/lidmaatschapwijziging/group</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingGroup</page_callback>
+    <title>LidmaatschapWijzigingGroup</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/lidmaatschapwijziging/registratieopleidingbelangstelling</path>
+    <page_callback>CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingRegistratieOpleidingBelangstelling</page_callback>
+    <title>LidmaatschapWijzigingRegistratieOpleidingBelangstelling</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

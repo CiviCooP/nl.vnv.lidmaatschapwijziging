@@ -210,14 +210,15 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
       $params = array(1 => array($this->contact_id, 'Positive'));
       $dao = CRM_Core_DAO::executeQuery($query, $params);
             
-      if ($dao->fetch()) {
+      if ($dao->fetch()) {        
         foreach($dao as $field => $value){
           $this->vnvInfoCustomValues[$field] = $value;
         }
       }else {
-        echo('No custom values, '
+        // there could be no custom values
+        /*echo('No custom values, '
         . 'error from function setVnvInfoCustomValues');
-        CRM_Utils_System::civiExit();
+        CRM_Utils_System::civiExit();*/
       }  
     } catch (CiviCRM_API3_Exception $ex) {
       throw new Exception('Could not find vnv info custom values, '
@@ -339,9 +340,10 @@ class CRM_Lidmaatschapwijziging_ConfigContact {
           $this->werkgeverCustomValues[$field] = $value;
         }
       }else {
-        echo('No custom values, '
+        // there could be no custom values
+        /*echo('No custom values, '
         . 'error from function setWerkgeverCustomValues');
-        CRM_Utils_System::civiExit();
+        CRM_Utils_System::civiExit();*/
       }  
     } catch (CiviCRM_API3_Exception $ex) {
       throw new Exception('Could not find werkgever custom values, '

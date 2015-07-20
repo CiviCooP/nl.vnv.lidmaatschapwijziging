@@ -1,4 +1,7 @@
 <?php
+/**
+ * BOS1502450 vnv.nl - wijzigingsformulier
+ */
 
 require_once 'lidmaatschapwijziging.civix.php';
 
@@ -106,3 +109,18 @@ function lidmaatschapwijziging_civicrm_caseTypes(&$caseTypes) {
 function lidmaatschapwijziging_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _lidmaatschapwijziging_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * This add a button to the contact view (summary) template, how it works:
+ * this script add to the region page-body ({crmRegion}, look at http://wiki.civicrm.org/confluence/display/CRMDOC/Region+Reference) a
+ * template with the button html code and a javascript that moves the buton to a other place (by the #actions) 
+ * 
+ * @param type $contactID
+ * @param type $content
+ * @param type $contentPlacement
+ */
+function lidmaatschapwijziging_civicrm_summary( $contactID, &$content, &$contentPlacement = CRM_Utils_Hook::SUMMARY_ABOVE ){
+  CRM_Core_Region::instance('page-body')->add(array('template' => 'CRM/Lidmaatschapwijziging/Page/View/LidmaatschapwijzigingButton.tpl')); 
+
+}
+

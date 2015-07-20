@@ -43,3 +43,24 @@
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
 </div>
+
+{literal}
+<script type="text/javascript">
+cj( document ).ready(function($) {
+  function enableDisableMembershipStatus(){
+    if(cj('#is_override').is(':checked')){
+      cj('#status_id').removeAttr('disabled');
+    }else {
+      cj('#status_id').attr('disabled', 'disabled');
+    }
+  }
+
+  enableDisableMembershipStatus();
+
+  cj('#is_override').change(function () {
+    enableDisableMembershipStatus();
+  });
+
+});
+</script>
+{/literal}
