@@ -305,7 +305,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
     }
     
     
-    if('update' == $this->_request){
+    if('update' == $this->_request){      
       // api create membership
       try {    
         $params = array(
@@ -320,7 +320,6 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
           'is_override' => $values['is_override'],
           'status_id' => $values['status_id'],
         );
-        $result = civicrm_api('Membership', 'create', $params);
         
         // for the custom values in membership, the need to be custom_35 and not huppeldepup
         foreach($this->_configMembership->getMembershipCustomFields() as $key => $field){
@@ -328,14 +327,14 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
             $params['custom_' . $field['id']] = $values[$field['name']];
           }
         }
-
+                
         $result = civicrm_api('Membership', 'create', $params);
-        
+                
         // check no error
         if(isset($result['is_error']) and !$result['is_error']){ // if there is no error   
           // set message
           $session = CRM_Core_Session::singleton();
-          $session->setStatus(ts('%1 is opgeslagen !', $this->_display_name), ts('Lidmaatschap Wijziging - Membership'), 'success');
+          $session->setStatus(ts('%1 is opgeslagen !', $this->_display_name), ts('Lidmaatschap Wijziging - Lidmaatschap'), 'success');
 
           // redirect user
           $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/relationship', 'reset=1&request=choose&cid=' . $this->_contactId);
@@ -344,7 +343,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
         }else { // if there is a error
           // set message
           $session = CRM_Core_Session::singleton();
-          $session->setStatus(ts('Er is een error: %1, %2 is niet opgeslagen !', array($result['error_message'], $this->_display_name)), ts('Lidmaatschap Wijziging - Membership'), 'error');
+          $session->setStatus(ts('Er is een error: %1, %2 is niet opgeslagen !', array($result['error_message'], $this->_display_name)), ts('Lidmaatschap Wijziging - Lidmaatschap'), 'error');
 
           // redirect user
           $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/membership', 'reset=1&cid=' . $this->_contactId);

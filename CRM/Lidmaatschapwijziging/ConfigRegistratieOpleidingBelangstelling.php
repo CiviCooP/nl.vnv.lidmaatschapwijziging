@@ -167,7 +167,7 @@ class CRM_Lidmaatschapwijziging_ConfigRegistratieOpleidingBelangstelling {
             case $RegiOplBelCustomFieldsByName['Commissies']['column_name']:
             case $RegiOplBelCustomFieldsByName['Groepscommissie']['column_name']:
             case $RegiOplBelCustomFieldsByName['Vliegschool']['column_name']:
-              echo('$field: ' . $field) . '<br/>' . PHP_EOL;
+              
               $values = explode(CRM_Core_DAO::VALUE_SEPARATOR, $value);
               foreach($values as $key => $value){
                 if(!empty($value)){

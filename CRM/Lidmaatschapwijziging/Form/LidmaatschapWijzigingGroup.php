@@ -205,7 +205,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingGroup extends CRM_Core
         
     }else {
       $session = CRM_Core_Session::singleton();
-      $session->setStatus(ts("Een groep gekozen ! Contact '%1' is niet aan een groep toegevoegd.", array(1 => $this->_display_name)), ts('Lidmaatschap Wijziging - Groep'), 'warning');
+      $session->setStatus(ts("Geen groep gekozen ! %1 is niet aan een groep toegevoegd.", array(1 => $this->_display_name)), ts('Lidmaatschap Wijziging - Groep'), 'warning');
 
       // redirect user
       $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/registratieopleidingbelangstelling', 'reset=1&cid=' . $this->_contactId);

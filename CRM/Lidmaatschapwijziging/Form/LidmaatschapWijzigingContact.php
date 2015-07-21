@@ -315,9 +315,9 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
           $params['custom_' . $field['id']] = $values[$field['name']];
         }
       }
-
-      $result = civicrm_api('Contact', 'create', $params);
       
+      $result = civicrm_api('Contact', 'create', $params);
+            
       // check no error
       if(isset($result['is_error']) and !$result['is_error']){ // if there is no error   
         // set message

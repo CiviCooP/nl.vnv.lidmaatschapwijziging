@@ -235,13 +235,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingRegistratieOpleidingBe
       'Commissies',
       'Groepscommissie',
     );
-    
-    echo('<pre>');
-    print_r($values);
-    print_r($regiOplBelFields);
-    echo('</pre>');
-    CRM_Utils_System::civiExit();
-    
+        
     $customFields = array();
     foreach ($regiOplBelFieldsNeeded as $key => $name){
       
@@ -312,18 +306,22 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingRegistratieOpleidingBe
           case 'Vooropleiding':
           case 'Overige_opleiding':
           
+            $params['custom_' . $field['id']] = array(); // set it empty, if there is no values it will be empty, or else the field wound not be empty
+            
             // if there is a value submitted, than the checkboxes with name exist and have a 
             // value of 1, the 1 must be the value of the chekcbox (the same as the name of the option)
             if(isset($values[$field['name']]) and !empty($values[$field['name']])){
               foreach($values[$field['name']] as $option_name => $boolean){
                 $params['custom_' . $field['id']][$option_name] = $option_name;
               }
-            }
+            }       
             break;
 
           case 'Algemene_onderwerpen':
           case 'Commissies':
           case 'Groepscommissie':
+            
+            $params['custom_' . $field['id']] = array(); // set it empty, if there is no values it will be empty, or else the field wound not be empty
             
             // the advanced select have a array like [0 => label, 1 => label], and it
             // must be [name => name, name => name]
@@ -348,23 +346,20 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingRegistratieOpleidingBe
         }
       }
       
-      echo('$params: <pre>');
-      print_r($params);
-      echo('</pre>');
+      // set checkboxes
+      // set if not exist
+      if(!isset($values['is_permission_a_b'])){
+        $values['is_permission_a_b'] = '0';
+      }
       
       $result = civicrm_api('CustomValue', 'create', $params);
-      
-      echo('$result: <pre>');
-      print_r($result);
-      echo('</pre>');
-      
-      CRM_Utils_System::civiExit();
-      
+            
       // check no error
       if(isset($result['is_error']) and !$result['is_error']){ // if there is no error   
         // set message
         $session = CRM_Core_Session::singleton();
         $session->setStatus(ts('%1 is opgeslagen !', $this->_display_name), ts('Lidmaatschap Wijziging - Registratie Opleiding Belasngstelling'), 'success');
+        $session->setStatus(ts('Lidmaatschap wijziging van %1 is klaar !', $this->_display_name), ts('Lidmaatschap Wijziging - Klaar'), 'success');
 
         // redirect user
         $url = CRM_Utils_System::url('civicrm/contact/view', 'reset=1&cid=' . $this->_contactId);
