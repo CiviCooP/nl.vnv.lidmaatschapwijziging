@@ -325,7 +325,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingContact extends CRM_Co
         $session->setStatus(ts('%1 is opgeslagen !', $this->_display_name), ts('Lidmaatschap Wijziging - Contact'), 'success');
 
         // redirect user
-        $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/membership', 'reset=1&action=choose&cid=' . $this->_contactId);
+        $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/membership', 'reset=1&request=choose&cid=' . $this->_contactId);
         CRM_Utils_System::redirect($url);
         
       }else { // if there is a error

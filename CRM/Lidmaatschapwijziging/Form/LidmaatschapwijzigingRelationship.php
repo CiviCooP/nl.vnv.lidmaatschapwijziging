@@ -58,8 +58,20 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
     CRM_Utils_System::setTitle('LidmaatschapWijziging - Relatie - ' . $this->_values['display_name']);
     
     // request
-    if('choose' == $this->_request){
+    if('empty' == $this->_request){
       
+    }
+    
+    if('choose' == $this->_request){
+      // if there is no relatiosnhips then the options are empty, we
+      // show a message that there are no memebrships and a submit butten to
+      // go to the relationship, first we redirect them to request empty
+      $relationships = $this->_configRelationship->getRelationships();
+      if(empty($relationships)){
+        // redirect user
+        $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/relationship', 'reset=1&request=empty&cid=' . $this->_contactId);
+        CRM_Utils_System::redirect($url);
+      }      
     }
     
     if('update' == $this->_request){
@@ -126,7 +138,21 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
     // Request
     $this->add('hidden', 'request', ts('Request'), '', true);
         
+    if('empty' == $this->_request){      
+      $this->assign('request', 'empty');
+      
+      $this->addButtons(array(
+        array(
+          'type' => 'submit',
+          'name' => ts('Volgende'),
+          'isDefault' => TRUE,
+        ),
+      ));
+    }
+    
     if('choose' == $this->_request){
+      $this->assign('request', 'choose');
+      
       $relatiosnhipTypes = $this->_configRelationship->getRelatiosnhipTypes();
       
       // memberships
@@ -169,6 +195,7 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
     }   
     
     if('update' == $this->_request){
+      $this->assign('request', 'update');
       
       // Relationship id
       $this->add('hidden', 'relationship_id', ts('Relationship id'), '', true);
@@ -260,23 +287,36 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
       $errors['request'] = ts('Aanvraag bestaat niet of is leeg !');
     }
     
-    // check relationship_id
-    $relationship_id = CRM_Utils_Array::value('relationship_id', $values);
-    if(!isset($relationship_id) or empty($relationship_id)){ // exists or empty
-      $errors['relationship_id'] = ts('Relatie id a bestaat niet of is leeg !');
-    }else if(!is_numeric($relationship_id)){ // is not a number
-      $errors['relationship_id'] = ts('Relatie id a is geen nummer !');
-    }
+    
     
     $configRelationship = CRM_Lidmaatschapwijziging_ConfigRelationship::singleton($contact_id);
     
+    // empty
+    if('empty' == $request){
+      
+    }
+    
     // choose
     if('choose' == $request){
-      
+      // check relationship_id
+      $relationship_id = CRM_Utils_Array::value('relationship_id', $values);
+      if(!isset($relationship_id) or empty($relationship_id)){ // exists or empty
+        $errors['relationship_id'] = ts('Relatie id a bestaat niet of is leeg !');
+      }else if(!is_numeric($relationship_id)){ // is not a number
+        $errors['relationship_id'] = ts('Relatie id a is geen nummer !');
+      }
     }
     
     // update
     if('update' == $request){
+      // check relationship_id
+      $relationship_id = CRM_Utils_Array::value('relationship_id', $values);
+      if(!isset($relationship_id) or empty($relationship_id)){ // exists or empty
+        $errors['relationship_id'] = ts('Relatie id a bestaat niet of is leeg !');
+      }else if(!is_numeric($relationship_id)){ // is not a number
+        $errors['relationship_id'] = ts('Relatie id a is geen nummer !');
+      }
+    
       // check contact_id_a
       $contact_id_a = CRM_Utils_Array::value('contact_id_a', $values);
       if(!isset($contact_id_a) or empty($contact_id_a)){ // contact id exists or empty
@@ -335,6 +375,17 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
     $values = $this->exportValues();    
     $this->_configRelationship = CRM_Lidmaatschapwijziging_ConfigRelationship::singleton($this->_contactId);
     
+    // empty
+    if('empty' ==  $this->_request){
+      // set message
+      $session = CRM_Core_Session::singleton();
+      $session->setStatus(ts('Voor %1 bestaat geen lidmaatschap !', $this->_display_name), ts('Lidmaatschap Wijziging - Relatie'), 'warning');
+
+      // redirect user
+      $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/group', 'reset=1&cid=' . $this->_contactId);
+      CRM_Utils_System::redirect($url);
+    }
+    
     // choose
     if('choose' ==  $this->_request){
       // set message
@@ -347,9 +398,6 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingRelationship extends C
     
     // update
     if('update' == $this->_request){ 
-      
-      
-      
       /**
        * Note works diffrent from the other, if the
        * is empty delete it, if the note not empty create 

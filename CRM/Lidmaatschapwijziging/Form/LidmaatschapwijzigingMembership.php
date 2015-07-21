@@ -56,8 +56,20 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
     CRM_Utils_System::setTitle('LidmaatschapWijziging - Lidmaatschap - ' . $this->_values['display_name']);
     
     // request
-    if('choose' == $this->_request){
+    if('empty' == $this->_request){
       
+    }
+    
+    if('choose' == $this->_request){
+      // if there is no memberships then the options are empty, we
+      // show a message that there are no memebrships and a submit butten to
+      // go to the relationship, first we redirect them to request empty
+      $memberships = $this->_configMembership->getMemberships();
+      if(empty($memberships)){
+        // redirect user
+        $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/membership', 'reset=1&request=empty&cid=' . $this->_contactId);
+        CRM_Utils_System::redirect($url);
+      }
     }
     
     if('update' == $this->_request){
@@ -88,8 +100,8 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
   function setDefaultValues() {
     $defaults = array();
     $defaults = $this->_values;
-    
-    if('update' == $this->_request){
+       
+    if('update' == $this->_request){      
       // start date
       if (isset($defaults['start_date'])) { 
         list($defaults['start_date']) = CRM_Utils_Date::setDateDefaults($defaults['start_date']); // list is needed or else it does not work
@@ -113,7 +125,20 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
     // Request
     $this->add('hidden', 'request', ts('Request'), '', true);
     
+    if('empty' == $this->_request){      
+      $this->assign('request', 'empty');
+      
+      $this->addButtons(array(
+        array(
+          'type' => 'submit',
+          'name' => ts('Volgende'),
+          'isDefault' => TRUE,
+        ),
+      ));
+    }
+    
     if('choose' == $this->_request){
+      $this->assign('request', 'choose');
       
       // memberships
       $options = array();
@@ -131,8 +156,10 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
           $options[$membership['id']] .= ', ' . ts($membership['source']);
         }
       }
-      $this->add('select', 'membership_id',  ts('Membership'), $options, true);
       
+      
+      $this->add('select', 'membership_id',  ts('Membership'), $options, true);
+
       $this->addButtons(array(
         array(
           'type' => 'submit',
@@ -140,9 +167,13 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
           'isDefault' => TRUE,
         ),
       ));
+      
     }
     
-    if('update' == $this->_request){      
+    if('update' == $this->_request){ 
+      $this->assign('request', 'update');
+
+      
       // Membership id
       $this->add('hidden', 'membership_id', ts('Membership id'), '', true);
       
@@ -249,6 +280,11 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
       $errors['request'] = ts('Aanvraag bestaat niet of is leeg !');
     }
     
+    // empty
+    if('empty' == $request){
+      
+    }
+    
     // choose
     if('choose' == $request){
       // check relationship_id
@@ -262,6 +298,14 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
     
     // update
     if('update' == $request){
+      // check relationship_id
+      $membership_id = CRM_Utils_Array::value('membership_id', $values);
+      if(!isset($membership_id) or empty($membership_id)){ // exists or empty
+        $errors['membership_id'] = ts('Lidmaatschap id a bestaat niet of is leeg !');
+      }else if(!is_numeric($membership_id)){ // is not a number
+        $errors['membership_id'] = ts('Lidmaatschap id a is geen nummer !');
+      }
+      
       // check end_date
       if(isset($values['end_date']) and !empty($values['end_date'])){
         if($values['start_date'] > $values['end_date']){
@@ -293,6 +337,17 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapwijzigingMembership extends CRM
     $values = $this->exportValues();
         
     $this->_configMembership = CRM_Lidmaatschapwijziging_ConfigMembership::singleton($this->_contactId);
+    
+    // empty
+    if('empty' ==  $this->_request){
+      // set message
+      $session = CRM_Core_Session::singleton();
+      $session->setStatus(ts('Voor %1 bestaat geen lidmaatschap !', $this->_display_name), ts('Lidmaatschap Wijziging - Lidmaatschap'), 'warning');
+
+      // redirect user
+      $url = CRM_Utils_System::url('civicrm/lidmaatschapwijziging/relationship', 'reset=1&request=choose&cid=' . $this->_contactId);
+      CRM_Utils_System::redirect($url);
+    }
     
     // choose
     if('choose' ==  $this->_request){

@@ -6,39 +6,47 @@
 
 {* FIELD EXAMPLE: OPTION 1 (AUTOMATIC LAYOUT) *}
 
-<table class="form-layout-compressed">
-  {foreach from=$elementNames item=elementName}
-    
-    {if $form.$elementName.name eq 'start_date'}
-      <tr class="crm-membership-{$form.$elementName.name}">
-        <td class="label">{$form.$elementName.label}</td>
-        <td>
-           {include file="CRM/common/jcalendar.tpl" elementName=$form.$elementName.name}<br/>
-          <br/>
-          <span class="description">{ts}First day of current continuous membership period. Start Date will be automatically set based on Membership Type if you don't select a date.{/ts}</span>
-        </td>
-      </tr>
+{if $request eq 'empty'}
+  <table class="form-layout-compressed">  
+    <tr class="crm-membership-no-relationships">
+      <td class="description">{ts}Voor dit contact bestaat geen lidmaatschap !{/ts}</td>
+    </tr>
+  </table>
 
-    {elseif $form.$elementName.name eq 'end_date'}
-      <tr class="crm-membership-{$form.$elementName.name}">
-        <td class="label">{$form.$elementName.label}</td>
-        <td>
-          {include file="CRM/common/jcalendar.tpl" elementName=$form.$elementName.name}<br/>
-         <span class="description">{ts}Latest membership period expiration date. End Date will be automatically set based on Membership Type if you don't select a date.{/ts}</span>
-        </td>
-      </tr>
-      
-    {else}
-      <tr class="crm-membership-{$form.$elementName.name}">
-        <td class="label">{$form.$elementName.label}</td>
-        <td>{$form.$elementName.html}</td>
-      </tr>
-    {/if}
+{else}
+  <table class="form-layout-compressed">  
+    {foreach from=$elementNames item=elementName}
 
-  {/foreach}
+      {if $form.$elementName.name eq 'start_date'}
+        <tr class="crm-membership-{$form.$elementName.name}">
+          <td class="label">{$form.$elementName.label}</td>
+          <td>
+             {include file="CRM/common/jcalendar.tpl" elementName=$form.$elementName.name}<br/>
+            <br/>
+            <span class="description">{ts}First day of current continuous membership period. Start Date will be automatically set based on Membership Type if you don't select a date.{/ts}</span>
+          </td>
+        </tr>
 
-</table>
+      {elseif $form.$elementName.name eq 'end_date'}
+        <tr class="crm-membership-{$form.$elementName.name}">
+          <td class="label">{$form.$elementName.label}</td>
+          <td>
+            {include file="CRM/common/jcalendar.tpl" elementName=$form.$elementName.name}<br/>
+           <span class="description">{ts}Latest membership period expiration date. End Date will be automatically set based on Membership Type if you don't select a date.{/ts}</span>
+          </td>
+        </tr>
 
+      {else}
+        <tr class="crm-membership-{$form.$elementName.name}">
+          <td class="label">{$form.$elementName.label}</td>
+          <td>{$form.$elementName.html}</td>
+        </tr>
+      {/if}
+
+    {/foreach}
+
+  </table>
+{/if} 
 {* FOOTER *}
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
