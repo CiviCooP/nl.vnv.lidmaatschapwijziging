@@ -339,7 +339,6 @@ class CRM_Lidmaatschapwijziging_Form_LidmaatschapWijzigingRegistratieOpleidingBe
             break;
             
           default:
-            $this->regiOplBelCustomValues[$field] = $value;
             if(isset($values[$field['name']])){
               $params['custom_' . $field['id']] = $values[$field['name']];
             }
